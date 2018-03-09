@@ -1,0 +1,30 @@
+# Copyright (C) 2018 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+static_library("cc") {
+  defines = [ "TARGET_OS_FUCHSIA" ]
+  configs += [ "//third_party/gapid/core/cc:core_cc_config" ]
+  include_dirs = [ "//third_party/gapid/bazel-genfiles" ]
+  sources = [
+    "fuchsia/query.cpp",
+    "cpu.cpp",
+    "gl.cpp",
+    "instance.cpp",
+    "query.cpp",
+    "vk.cpp",
+  ]
+  public_deps = [
+    "//third_party/gapid/core/cc:cityhash",
+  ]
+}

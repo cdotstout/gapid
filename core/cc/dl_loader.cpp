@@ -57,7 +57,7 @@ void* load(const char* name, ConstCharPtrs... fallback_names) {
         }
     }
     ret = res;
-#elif TARGET_OS == GAPID_OS_ANDROID
+#elif TARGET_OS == GAPID_OS_ANDROID || TARGET_OS == GAPID_OS_FUCHSIA
     ret = dlopen(name, RTLD_NOW | RTLD_LOCAL);
 #else
     ret = dlopen(name, RTLD_LAZY | RTLD_DEEPBIND);

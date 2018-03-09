@@ -1,0 +1,11 @@
+{
+    "languages": [
+        "cpp"
+    ],
+    "imports": [
+        "garnet/packages/vulkan"
+    ],
+    "packages": {
+        "gapii" : "//third_party/gapid/fuchsia:gapii"
+    }
+}

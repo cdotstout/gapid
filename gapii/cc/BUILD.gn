@@ -1,0 +1,102 @@
+# Copyright (C) 2018 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/package.gni")
+
+shared_library("cc") {
+  output_name = "libgapii"
+  include_dirs = [
+    "//third_party/gapid",
+    "//third_party/gapid/bazel-genfiles" 
+  ]
+  cflags_cc = [
+    "-Wno-sign-compare",
+    "-Wno-pessimizing-move",
+    "-Wno-switch-bool",
+    "-Wno-implicitly-unsigned-literal",
+    "-Wno-return-type-c-linkage"
+  ]
+  configs += [ "//build/config:exceptions" ]
+  sources = [
+    "call_observer.cpp",
+    "chunk_writer.cpp",
+    "connection_header.cpp",
+    "connection_stream.cpp",
+    "gles_context.cpp",
+    "gles_extras.cpp",
+    "gles_spy_externs.cpp",
+    "gvr_extras.cpp",
+    "pack_encoder.cpp",
+    "runtime.cpp",
+    "spy.cpp",
+    "spy_base.cpp",
+    "spy_disable_precompiled_shaders.cpp",
+    "vulkan_extras.cpp",
+    "vulkan_mid_execution.cpp",
+  ]
+  sources += [ 
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_types.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_spy_0.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_spy_1.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_spy_2.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_spy_3.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_imports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_spy_subroutines_0.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gles_spy_subroutines_1.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_types.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_spy_0.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_spy_1.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_spy_2.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_spy_3.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_imports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_spy_subroutines_0.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/gvr_spy_subroutines_1.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_types.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_spy_0.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_spy_1.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_spy_2.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_spy_3.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_imports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_spy_helpers.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_VkCommandBuffer_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_VkDevice_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_VkInstance_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_VkPhysicalDevice_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_VkQueue_exports.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_spy_subroutines_0.cpp",
+    "//third_party/gapid/bazel-genfiles/gapii/cc/vulkan_spy_subroutines_1.cpp",
+    "//third_party/gapid/bazel-bin/gapii/cc/vulkan_compiled.o",
+    "//third_party/gapid/bazel-bin/gapii/cc/gles_compiled.o",
+    "//third_party/gapid/bazel-bin/gapii/cc/gvr_compiled.o",
+    "//third_party/gapid/bazel-genfiles/gapis/vertex/vertex.pb.cc",
+    "//third_party/gapid/bazel-genfiles/gapis/capture/capture.pb.cc",
+    "//third_party/gapid/bazel-genfiles/gapis/memory/memory_pb/memory.pb.cc",
+    "//third_party/gapid/bazel-genfiles/gapis/api/service.pb.cc",
+    "//third_party/gapid/bazel-genfiles/gapis/api/gles/gles_pb/extras.pb.cc",
+    "//third_party/gapid/bazel-genfiles/gapis/api/gfxtrace.pb.cc",
+    "//third_party/gapid/bazel-genfiles/gapis/service/box/box.pb.cc",
+    "//third_party/gapid/bazel-genfiles/gapis/service/path/path.pb.cc",
+  ]
+  deps = [
+    "//third_party/gapid/core/cc",
+    "//third_party/gapid/core/memory/arena/cc",
+    #"//core/memory_tracker/cc",
+    "//third_party/gapid/core/os/device/deviceinfo/cc",
+    "//third_party/gapid/gapil/runtime/cc",
+    "//third_party/protobuf:protobuf_full",
+  ]
+}
