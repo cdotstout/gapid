@@ -21,6 +21,7 @@
 #define GAPID_OS_OSX     2
 #define GAPID_OS_WINDOWS 3
 #define GAPID_OS_ANDROID 4
+#define GAPID_OS_FUCHSIA 5
 
 #define LINUX_ONLY(x)
 #define OSX_ONLY(x)
@@ -35,6 +36,16 @@
 #   define PATH_DELIMITER_STR "/"
 #   undef  LINUX_ONLY
 #   define LINUX_ONLY(x) x
+#endif
+
+#if defined(TARGET_OS_FUCHSIA)
+#   define TARGET_OS GAPID_OS_FUCHSIA
+#   define STDCALL
+#   define EXPORT __attribute__ ((visibility ("default")))
+#   define PATH_DELIMITER '/'
+#   define PATH_DELIMITER_STR "/"
+#   undef  FUCHSIA_ONLY
+#   define FUCHSIA_ONLY(x) x
 #endif
 
 #if defined(TARGET_OS_OSX)
@@ -72,10 +83,20 @@
 #   define WINDOWS_ONLY(x) x
 #endif
 
+#if defined(TARGET_OS_FUCHSIA)
+#   define TARGET_OS GAPID_OS_FUCHSIA
+#   define STDCALL
+#   define EXPORT __attribute__ ((visibility ("default")))
+#   define PATH_DELIMITER '/'
+#   define PATH_DELIMITER_STR "/"
+#   undef  LINUX_ONLY
+#   define LINUX_ONLY(x) x
+#endif
+
 #ifndef TARGET_OS
 #   error "OS not defined correctly."
 #   error "Exactly one of the following macro have to be defined:" \
-           "TARGET_OS_LINUX, TARGET_OS_OSX, TARGET_OS_WINDOWS, TARGET_OS_ANDROID"
+           "TARGET_OS_LINUX, TARGET_OS_OSX, TARGET_OS_WINDOWS, TARGET_OS_ANDROID, TARGET_OS_FUCHSIA"
 #endif
 
 #ifdef _MSC_VER // MSVC
