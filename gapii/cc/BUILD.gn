@@ -97,6 +97,6 @@ shared_library("cc") {
     #"//core/memory_tracker/cc",
     "//third_party/gapid/core/os/device/deviceinfo/cc",
     "//third_party/gapid/gapil/runtime/cc",
-    "//third_party/protobuf:protobuf_full",
+    "//third_party/gapid/bazel-gapid/external/com_google_protobuf:protobuf_full",
   ]
 }

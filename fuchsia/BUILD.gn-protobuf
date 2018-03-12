@@ -1,0 +1,294 @@
+# Copyright 2017 The Fuchsia Authors. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#    * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above
+# copyright notice, this list of conditions and the following disclaimer
+# in the documentation and/or other materials provided with the
+# distribution.
+#    * Neither the name of Google Inc. nor the names of its
+# contributors may be used to endorse or promote products derived from
+# this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Copied from //third_party/protobuf
+# Copy to bazel-gapid/external/com_google_protobuf
+
+import("//build/compiled_action.gni")
+
+config("protobuf_config") {
+  include_dirs = [ "src" ]
+  defines = [
+    "GOOGLE_PROTOBUF_NO_RTTI",
+    "GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER",
+    "HAVE_PTHREAD",
+  ]
+}
+config("protobuf_warnings") {
+  cflags = []
+  if (is_clang) {
+    # protobuf-3 contains a few functions that are unused.
+    cflags += [ "-Wno-unused-function" ]
+    # Note(rudominer) I added these because there were a lot of warnings.
+    cflags += [ "-Wno-sign-compare",
+                "-Wno-missing-field-initializers",
+                "-Wno-enum-compare-switch" ]
+  }
+}
+
+# This config should be applied to targets using generated code from the proto
+# compiler. It sets up the include directories properly.
+config("using_proto") {
+  include_dirs = [
+    "src",
+    "$root_gen_dir",
+  ]
+}
+
+protobuf_lite_sources = [
+  "src/google/protobuf/arena.cc",
+  "src/google/protobuf/arena.h",
+  "src/google/protobuf/arenastring.cc",
+  "src/google/protobuf/arenastring.h",
+  "src/google/protobuf/extension_set.cc",
+  "src/google/protobuf/extension_set.h",
+  "src/google/protobuf/generated_message_util.cc",
+  "src/google/protobuf/generated_message_util.h",
+  "src/google/protobuf/io/coded_stream.cc",
+  "src/google/protobuf/io/coded_stream.h",
+  "src/google/protobuf/io/coded_stream_inl.h",
+  "src/google/protobuf/io/zero_copy_stream.cc",
+  "src/google/protobuf/io/zero_copy_stream.h",
+  "src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
+  "src/google/protobuf/io/zero_copy_stream_impl_lite.h",
+  "src/google/protobuf/map.h",
+  "src/google/protobuf/map_entry_lite.h",
+  "src/google/protobuf/map_field_lite.h",
+  "src/google/protobuf/map_type_handler.h",
+  "src/google/protobuf/message_lite.cc",
+  "src/google/protobuf/message_lite.h",
+  "src/google/protobuf/repeated_field.cc",
+  "src/google/protobuf/repeated_field.h",
+  "src/google/protobuf/stubs/atomicops.h",
+  "src/google/protobuf/stubs/atomicops_internals_arm64_gcc.h",
+  "src/google/protobuf/stubs/atomicops_internals_arm_gcc.h",
+  "src/google/protobuf/stubs/atomicops_internals_arm_qnx.h",
+  "src/google/protobuf/stubs/atomicops_internals_generic_c11_atomic.h",
+  "src/google/protobuf/stubs/atomicops_internals_generic_gcc.h",
+  "src/google/protobuf/stubs/atomicops_internals_mips_gcc.h",
+  "src/google/protobuf/stubs/atomicops_internals_power.h",
+  "src/google/protobuf/stubs/atomicops_internals_ppc_gcc.h",
+  "src/google/protobuf/stubs/atomicops_internals_solaris.h",
+  "src/google/protobuf/stubs/atomicops_internals_tsan.h",
+  "src/google/protobuf/stubs/atomicops_internals_x86_gcc.cc",
+  "src/google/protobuf/stubs/atomicops_internals_x86_gcc.h",
+  "src/google/protobuf/stubs/atomicops_internals_x86_msvc.cc",
+  "src/google/protobuf/stubs/atomicops_internals_x86_msvc.h",
+  "src/google/protobuf/stubs/atomic_sequence_num.h",
+  "src/google/protobuf/stubs/bytestream.cc",
+  "src/google/protobuf/stubs/bytestream.h",
+  "src/google/protobuf/stubs/callback.h",
+  "src/google/protobuf/stubs/casts.h",
+  "src/google/protobuf/stubs/common.cc",
+  "src/google/protobuf/stubs/common.h",
+  "src/google/protobuf/stubs/fastmem.h",
+  "src/google/protobuf/stubs/hash.h",
+  "src/google/protobuf/stubs/int128.cc",
+  "src/google/protobuf/stubs/int128.h",
+  "src/google/protobuf/stubs/logging.h",
+  "src/google/protobuf/stubs/macros.h",
+  "src/google/protobuf/stubs/map_util.h",
+  "src/google/protobuf/stubs/mutex.h",
+  "src/google/protobuf/stubs/once.cc",
+  "src/google/protobuf/stubs/once.h",
+  "src/google/protobuf/stubs/platform_macros.h",
+  "src/google/protobuf/stubs/port.h",
+  "src/google/protobuf/stubs/scoped_ptr.h",
+  "src/google/protobuf/stubs/shared_ptr.h",
+  "src/google/protobuf/stubs/status.cc",
+  "src/google/protobuf/stubs/status.h",
+  "src/google/protobuf/stubs/status_macros.h",
+  "src/google/protobuf/stubs/statusor.cc",
+  "src/google/protobuf/stubs/statusor.h",
+  "src/google/protobuf/stubs/stl_util.h",
+  "src/google/protobuf/stubs/stringpiece.cc",
+  "src/google/protobuf/stubs/stringpiece.h",
+  "src/google/protobuf/stubs/stringprintf.cc",
+  "src/google/protobuf/stubs/stringprintf.h",
+  "src/google/protobuf/stubs/structurally_valid.cc",
+  "src/google/protobuf/stubs/strutil.cc",
+  "src/google/protobuf/stubs/strutil.h",
+  "src/google/protobuf/stubs/template_util.h",
+  "src/google/protobuf/stubs/type_traits.h",
+  "src/google/protobuf/stubs/time.cc",
+  "src/google/protobuf/stubs/time.h",
+  "src/google/protobuf/wire_format_lite.cc",
+  "src/google/protobuf/wire_format_lite.h",
+  "src/google/protobuf/wire_format_lite_inl.h",
+]
+
+static_library("protobuf_lite") {
+  sources = protobuf_lite_sources
+  configs += [
+    ":protobuf_warnings",
+  ]
+  public_configs = [
+    ":protobuf_config",
+  ]
+  cflags = []
+}
+
+# This is the full, heavy protobuf lib that's needed for c++ .protos that don't
+# specify the LITE_RUNTIME option. The protocol compiler itself (protoc) falls
+# into that category.
+static_library("protobuf_full") {
+  sources = protobuf_lite_sources + [
+    "src/google/protobuf/any.cc",
+    "src/google/protobuf/any.h",
+    "src/google/protobuf/any.pb.cc",
+    "src/google/protobuf/any.pb.h",
+    "src/google/protobuf/api.pb.cc",
+    "src/google/protobuf/api.pb.h",
+    "src/google/protobuf/compiler/importer.cc",
+    "src/google/protobuf/compiler/importer.h",
+    "src/google/protobuf/compiler/parser.cc",
+    "src/google/protobuf/compiler/parser.h",
+    "src/google/protobuf/descriptor.cc",
+    "src/google/protobuf/descriptor.h",
+    "src/google/protobuf/descriptor.pb.cc",
+    "src/google/protobuf/descriptor.pb.h",
+    "src/google/protobuf/descriptor_database.cc",
+    "src/google/protobuf/descriptor_database.h",
+    "src/google/protobuf/duration.pb.cc",
+    "src/google/protobuf/duration.pb.h",
+    "src/google/protobuf/dynamic_message.cc",
+    "src/google/protobuf/dynamic_message.h",
+    "src/google/protobuf/empty.pb.cc",
+    "src/google/protobuf/empty.pb.h",
+    "src/google/protobuf/extension_set_heavy.cc",
+    "src/google/protobuf/field_mask.pb.cc",
+    "src/google/protobuf/field_mask.pb.h",
+    "src/google/protobuf/generated_enum_reflection.h",
+    "src/google/protobuf/generated_enum_util.h",
+    "src/google/protobuf/generated_message_reflection.cc",
+    "src/google/protobuf/generated_message_reflection.h",
+    # gzip_stream.cc pulls in zlib, but it's not actually used by protoc, just
+    # by test code, so instead of compiling zlib for the host, let's just
+    # exclude this.
+    # "src/google/protobuf/io/gzip_stream.cc",
+    # "src/google/protobuf/io/gzip_stream.h",
+    "src/google/protobuf/io/printer.cc",
+    "src/google/protobuf/io/printer.h",
+    "src/google/protobuf/io/strtod.cc",
+    "src/google/protobuf/io/strtod.h",
+    "src/google/protobuf/io/tokenizer.cc",
+    "src/google/protobuf/io/tokenizer.h",
+    "src/google/protobuf/io/zero_copy_stream_impl.cc",
+    "src/google/protobuf/io/zero_copy_stream_impl.h",
+    "src/google/protobuf/map_entry.h",
+    "src/google/protobuf/map_field.cc",
+    "src/google/protobuf/map_field.h",
+    "src/google/protobuf/map_field_inl.h",
+    "src/google/protobuf/message.cc",
+    "src/google/protobuf/message.h",
+    "src/google/protobuf/metadata.h",
+    "src/google/protobuf/reflection.h",
+    "src/google/protobuf/reflection_internal.h",
+    "src/google/protobuf/reflection_ops.cc",
+    "src/google/protobuf/reflection_ops.h",
+    "src/google/protobuf/service.cc",
+    "src/google/protobuf/service.h",
+    "src/google/protobuf/source_context.pb.cc",
+    "src/google/protobuf/source_context.pb.h",
+    "src/google/protobuf/struct.pb.cc",
+    "src/google/protobuf/struct.pb.h",
+    "src/google/protobuf/stubs/mathlimits.cc",
+    "src/google/protobuf/stubs/mathlimits.h",
+    "src/google/protobuf/stubs/mathutil.h",
+    "src/google/protobuf/stubs/singleton.h",
+    "src/google/protobuf/stubs/substitute.cc",
+    "src/google/protobuf/stubs/substitute.h",
+    "src/google/protobuf/text_format.cc",
+    "src/google/protobuf/text_format.h",
+    "src/google/protobuf/timestamp.pb.cc",
+    "src/google/protobuf/timestamp.pb.h",
+    "src/google/protobuf/type.pb.cc",
+    "src/google/protobuf/type.pb.h",
+    "src/google/protobuf/unknown_field_set.cc",
+    "src/google/protobuf/unknown_field_set.h",
+    "src/google/protobuf/util/field_comparator.cc",
+    "src/google/protobuf/util/field_comparator.h",
+    "src/google/protobuf/util/field_mask_util.cc",
+    "src/google/protobuf/util/field_mask_util.h",
+    "src/google/protobuf/util/internal/constants.h",
+    "src/google/protobuf/util/internal/datapiece.cc",
+    "src/google/protobuf/util/internal/datapiece.h",
+    "src/google/protobuf/util/internal/default_value_objectwriter.cc",
+    "src/google/protobuf/util/internal/default_value_objectwriter.h",
+    "src/google/protobuf/util/internal/error_listener.cc",
+    "src/google/protobuf/util/internal/error_listener.h",
+    "src/google/protobuf/util/internal/field_mask_utility.cc",
+    "src/google/protobuf/util/internal/field_mask_utility.h",
+    "src/google/protobuf/util/internal/json_escaping.cc",
+    "src/google/protobuf/util/internal/json_escaping.h",
+    "src/google/protobuf/util/internal/json_objectwriter.cc",
+    "src/google/protobuf/util/internal/json_objectwriter.h",
+    "src/google/protobuf/util/internal/json_stream_parser.cc",
+    "src/google/protobuf/util/internal/json_stream_parser.h",
+    "src/google/protobuf/util/internal/location_tracker.h",
+    "src/google/protobuf/util/internal/object_location_tracker.h",
+    "src/google/protobuf/util/internal/object_source.h",
+    "src/google/protobuf/util/internal/object_writer.cc",
+    "src/google/protobuf/util/internal/object_writer.h",
+    "src/google/protobuf/util/internal/proto_writer.cc",
+    "src/google/protobuf/util/internal/proto_writer.h",
+    "src/google/protobuf/util/internal/protostream_objectsource.cc",
+    "src/google/protobuf/util/internal/protostream_objectsource.h",
+    "src/google/protobuf/util/internal/protostream_objectwriter.cc",
+    "src/google/protobuf/util/internal/protostream_objectwriter.h",
+    "src/google/protobuf/util/internal/structured_objectwriter.h",
+    "src/google/protobuf/util/internal/type_info.cc",
+    "src/google/protobuf/util/internal/type_info.h",
+    "src/google/protobuf/util/internal/type_info_test_helper.cc",
+    "src/google/protobuf/util/internal/type_info_test_helper.h",
+    "src/google/protobuf/util/internal/utility.cc",
+    "src/google/protobuf/util/internal/utility.h",
+    "src/google/protobuf/util/json_util.cc",
+    "src/google/protobuf/util/json_util.h",
+    "src/google/protobuf/util/message_differencer.cc",
+    "src/google/protobuf/util/message_differencer.h",
+    "src/google/protobuf/util/time_util.cc",
+    "src/google/protobuf/util/time_util.h",
+    "src/google/protobuf/util/type_resolver.h",
+    "src/google/protobuf/util/type_resolver_util.cc",
+    "src/google/protobuf/util/type_resolver_util.h",
+    "src/google/protobuf/wire_format.cc",
+    "src/google/protobuf/wire_format.h",
+    "src/google/protobuf/wrappers.pb.cc",
+    "src/google/protobuf/wrappers.pb.h",
+  ]
+  configs += [
+    ":protobuf_warnings",
+  ]
+  public_configs = [
+    ":protobuf_config",
+  ]
+  cflags = []
+}
+
+
