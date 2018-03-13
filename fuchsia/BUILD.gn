@@ -5,14 +5,19 @@
 import("//build/package.gni")
 
 package("gapii") {
+  system_image = true
+
+  deps = [ "//third_party/gapid/gapii/vulkan/vk_graphics_spy/cc:libVkLayerGraphicsSpy" ]
+
   libraries = [ {
     name = "libgapii.so"
+  },
+  {
+    name = "libVkLayerGraphicsSpy.so"
   } ]
-  meta = [ {
-    path = rebase_path("meta/sandbox")
-    dest = "sandbox"
+
+  resources = [ {
+    path = rebase_path("//third_party/gapid/gapii/vulkan/vk_graphics_spy/cc/GraphicsSpyLayer.json")
+    dest = "vulkan/explicit_layer.d/GraphicsSpyLayer.json"
   } ]
-  deps = [
-    "//third_party/gapid/gapii/cc"
-  ]
 }

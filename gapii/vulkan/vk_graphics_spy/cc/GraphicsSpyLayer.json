@@ -3,7 +3,7 @@
   "layer": {
     "name": "VkGraphicsSpy",
     "type": "GLOBAL",
-    "library_path": "<library>",
+    "library_path": "libVkLayerGraphicsSpy.so",
     "api_version" : "1.0.5",
     "implementation_version" : "1",
     "description" : "Graphics Spy Layer",
